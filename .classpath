@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/bouncycasle 1.4.5"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/iaik_jce_full-3.181"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/commons-codec-1.4"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/iaik_jce_full-5.01"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/commons-codec-1.7"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/bouncycastle-1.4.7"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

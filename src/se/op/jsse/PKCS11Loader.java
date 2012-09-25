@@ -3,7 +3,9 @@ package se.op.jsse;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.security.AuthProvider;
 import java.security.KeyStore;
 import java.security.Provider;
 import java.security.KeyStore.ProtectionParameter;
@@ -16,8 +18,6 @@ import java.util.Enumeration;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
-
-import sun.security.pkcs11.SunPKCS11;
 
 public class PKCS11Loader {
 	private static final String CfgFile="MyPKCS11.cfg";
@@ -33,9 +33,9 @@ public class PKCS11Loader {
 			pw.close();
 		}
 
-		Class<java.security.AuthProvider> c=SunPKCS11.class;
-		Method ctor=c.getDeclaredConstructor(CfgFile.class)//new SunPKCS11(CfgFile);
-				Provider p =ctor.invoke(null,CfgFile); 
+		Class<AuthProvider> c=(Class<AuthProvider>)Class.forName("sun.security.pkcs11.SunPKCS11");
+		Constructor<AuthProvider> ctor=c.getDeclaredConstructor(CfgFile.getClass());//new SunPKCS11(CfgFile);
+		Provider p =ctor.newInstance(CfgFile); 
 				
 		int pos=Security.addProvider(p);
 
