@@ -1,0 +1,289 @@
+package se.op.jsse;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateParsingException;
+import java.util.Iterator;
+import java.util.Set;
+
+import iaik.asn1.ASN1Object;
+import iaik.asn1.CodingException;
+import iaik.asn1.GeneralString;
+import iaik.asn1.ObjectID;
+import iaik.asn1.structures.AlgorithmID;
+import iaik.asn1.structures.Attribute;
+import iaik.asn1.structures.AttributeValue;
+import iaik.asn1.structures.ChoiceOfTime;
+import iaik.pkcs.PKCSException;
+import iaik.pkcs.PKCSParsingException;
+import iaik.pkcs.pkcs7.ContentInfo;
+import iaik.pkcs.pkcs7.IssuerAndSerialNumber;
+import iaik.pkcs.pkcs7.SignedData;
+import iaik.pkcs.pkcs7.SignerInfo;
+import iaik.security.rsa.RSAPrivateKey;
+import iaik.utils.Base64InputStream;
+
+import iaik.x509.V3Extension;
+import iaik.x509.X509Certificate;
+import iaik.x509.X509ExtensionInitException;
+
+/**
+ * IAIK versioner i omlopp
+ * C:/WS/sw/TSS_2.3.4_incl_SP4/TSS server/lib/iaik_jce.jar:
+ * 	IAIK version 3.141
+ * C:/WS/ccweb/proj/za/vobs/main/pki/src/ext/iaik/jce3.13/iaik_jce_full.jar:
+ * 	IAIK version 3.13
+ * env.ZI_HOME/lib/iaik_jce.jar:
+ *	IAIK version 3.0100000000000002
+ * iipax4???
+ * 
+ * @see http://tools.ietf.org/html/rfc2315
+ * @see clearcase:za/pki/kur/12_Standards/rsa/pkcs07v1.5.pdf
+ * @see http://en.wikipedia.org/wiki/Asn1
+ * @author nuto
+ *
+ */
+public class InspectPKCS7 {
+
+	/**
+	 * @param args
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 * @throws PKCSParsingException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws CertificateException 
+	 * @throws InvalidKeyException 
+	 * @throws InvalidKeyException 
+	 * @throws CertificateException 
+	 * @throws PKCSException 
+	 * @throws ClassNotFoundException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 */
+	public static void main(String[] args) throws FileNotFoundException, IOException, InvalidKeyException, CertificateException, NoSuchAlgorithmException, PKCSException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+		// registrera iaik
+		ProviderRegistrator.addIAIKProvider();
+
+		for (int i = 0; i < args.length; i++) {
+			ContentInfo contentInfo = new ContentInfo(new Base64InputStream(new FileInputStream(args[i])));
+//			System.err.println(toString(contentInfo));
+			System.err.println("===========================================");
+
+			//Signera indatat
+			byte[] sigsig = createPKCS7SignedData(ObjectID.pkcs7_signedData, getByteArrayFromInputStream(contentInfo.getContentInputStream()));
+			System.err.println(toString(new ContentInfo(new ByteArrayInputStream(sigsig))));
+			System.err.println("===========================================");
+		}
+		// signera lite junk
+		byte[] sigdat= createPKCS7SignedData(ObjectID.pkcs7_data,"asdfsadf".getBytes());
+		System.err.println(toString(new ContentInfo(new ByteArrayInputStream(sigdat))));
+		System.err.println("===========================================");
+		// Hit kommer vi aldrig!!! eftersom IAIK's SignedData alltid returnerar ObjectID.pkcs7_signedData
+		// dessutom så hanteras Content i en signatur alltid som ObjectID.pkcs7_data
+		// Lösning gör egen provider som korrekt parsar alla typer av ContentInfo...
+	}
+
+	private static byte[] createPKCS7SignedData(ObjectID contentType, byte[] sigdata)
+			throws InvalidKeyException, IOException, FileNotFoundException,
+			CertificateException, NoSuchAlgorithmException, PKCSException {
+		SignedData mySig=new SignedData(sigdata,SignedData.IMPLICIT);
+		RSAPrivateKey myKey = RSAPrivateKey.parse(getByteArrayFromInputStream(new FileInputStream("biljettsignering-key.pem")));
+		X509Certificate myCert = new X509Certificate(new FileInputStream("biljettsignering-crt.pem"));
+		
+		mySig.setCertificates(new X509Certificate[]{myCert});
+
+		// Create a new SignerInfo
+		SignerInfo mySigInfo = new SignerInfo(
+				new IssuerAndSerialNumber(myCert),
+		        AlgorithmID.sha,
+		        myKey);
+
+		// Define some attributes
+		Attribute[] attributes = new Attribute[] {
+				new Attribute(ObjectID.contentType,new ASN1Object[] { contentType }),
+				new Attribute(ObjectID.signingTime,new ASN1Object[] { new ChoiceOfTime().toASN1Object()}),
+				new Attribute(ObjectID.description,new ASN1Object[] { new GeneralString("George testar signaturer"), new GeneralString("En annan desc.")})
+		};
+
+		// Set the attributes
+		mySigInfo.setAuthenticatedAttributes(attributes);
+
+		// Add the new signer
+		mySig.addSignerInfo(mySigInfo);
+
+		// Create PKCS#7
+		ContentInfo ci = new ContentInfo(ObjectID.pkcs7_signedData);
+		ci.setContent(mySig);
+		return ci.toByteArray();
+	}
+
+	private static final byte[] getByteArrayFromInputStream(InputStream is) throws IOException {
+		ByteArrayOutputStream bos=new ByteArrayOutputStream();
+		int read;
+		while(-1!=(read=is.read())){
+			bos.write(read);
+		}
+		is.close();
+
+		return bos.toByteArray();
+	}
+	
+	public static String toString(ContentInfo contentInfo) throws IOException{
+		StringBuilder ret=new StringBuilder();
+		append(contentInfo,"ContentInfo",ret);
+		return ret.toString(); 
+	}
+
+	private static final void append(StringBuilder sb,Object... args){
+		for (Object object : args) {
+			sb.append(object);
+		}
+		sb.append(System.getProperty("line.separator"));
+	}
+
+	private static void append(ContentInfo contentInfo,String ctx,StringBuilder sb) throws IOException{
+		ObjectID oid=contentInfo.getContentType();
+		append(sb,ctx,".ContentType:",oid.getNameAndID());
+		append(oid,getByteArrayFromInputStream(contentInfo.getContentInputStream()),ctx,sb);
+	}
+
+	private static void append(ObjectID oid, byte[] content, String ctx,StringBuilder sb) {
+		ctx+=".Content("+oid.getShortName()+")";
+		boolean contentPrinted=false;
+		try{
+			if(ObjectID.pkcs7_signedData.equals(oid)){
+				append(new SignedData(new ByteArrayInputStream(content)),ctx,sb);
+				contentPrinted=true;
+			}else if(ObjectID.pkcs7_data.equals(oid)){
+				// Hit kommer vi aldrig!!! eftersom IAIK's SignedData alltid returnerar ObjectID.pkcs7_signedData
+				// dessutom så hanteras Content i en signatur alltid som ObjectID.pkcs7_data
+				append(sb, ctx,".Data: ",new String(content));
+				contentPrinted=true;
+			}else{
+				append(sb,ctx,":Unknown ContentType.");
+			}
+		} catch (Exception e) {
+			append(sb,ctx,": Invalid Content for ContentType: "+e);
+		} finally {
+			if(!contentPrinted){
+				append(sb,ctx,":",new String(content));
+			}
+		}
+	}
+	
+	private static void append(SignedData sd,String ctx,StringBuilder sb){
+		//Onödig alltid samma som för Content?!
+		append(sb, ctx,".Version: ",sd.getVersion());
+			
+		AlgorithmID [] digalgs=sd.getDigestAlgorithms();
+		for (int j = 0; j < digalgs.length; j++) {
+			append(digalgs[j],ctx+".DigestAlgorithmIdentifier["+j+"]",sb);
+		}
+
+		X509Certificate [] certs = sd.getCertificates();
+		for (int j = 0; j < certs.length; j++) {
+			append(certs[j],ctx+".Certificate["+j+"]",sb);
+		}
+
+		SignerInfo [] signerInfos = sd.getSignerInfos();
+		for (int j = 0; j < signerInfos.length; j++) {
+			append(signerInfos[j],ctx+".SignerInfo["+j+"]",sb);
+		}
+		
+		ObjectID oid=sd.getContentType();
+		append(sb,ctx,".ContentType:",oid.getNameAndID());
+		append(oid,sd.getContent(),ctx,sb);
+	}
+
+	private static void append(AlgorithmID alg,String ctx,StringBuilder sb){
+		append(sb,ctx,".Name:",alg.getName());
+		append(sb,ctx,".OID:",alg.getAlgorithm().getNameAndID());
+		try{
+			append(sb,ctx,".ImplName:",alg.getImplementationName());
+		}catch (NoSuchAlgorithmException e) {
+			append(sb,ctx+".ImplName: No implementation (",e.getMessage(),")");
+		}
+	}
+
+	private static void append(X509Certificate crt,String ctx,StringBuilder sb){
+		append(sb,ctx,".Type:",crt.getType());
+		append(sb,ctx,".Version:",crt.getVersion());
+		append(sb,ctx,".Issuer:",crt.getIssuerDN());
+		append(sb,ctx,".Subject:",crt.getSubjectDN());
+		append(sb,ctx,".Serial#:",crt.getSerialNumber());
+		try {
+			append(sb,ctx,".ExtendedKeyUsage:",crt.getExtendedKeyUsage());
+		} catch (CertificateParsingException e) {
+			append(sb,ctx,": Could not get Extended Key Usage:",e.getMessage());
+		}
+		append(sb,ctx,".BasicConstraints:",crt.getBasicConstraints());
+
+		append(crt,crt.getCriticalExtensionOIDs(),ctx+".CriticalExtension",sb);
+		append(crt,crt.getNonCriticalExtensionOIDs(),ctx+".NonCriticalExtension",sb);
+	}
+	
+	private static void append(SignerInfo si,String ctx,StringBuilder sb){
+		append(sb,ctx,".Version:",si.getVersion());
+		append(si.getDigestAlgorithm(),ctx+".DigestAlgorithm",sb);
+		append(sb,ctx,".EncryptedDigest:",new String(si.getEncryptedDigest()));
+		IssuerAndSerialNumber iasn=si.getIssuerAndSerialNumber();
+		append(sb,ctx,".IssuerAndSerialNumber:",iasn.getIssuer()," and ",iasn.getSerialNumber());
+		Attribute [] attrs=si.getAuthenticatedAttributes();
+		if(null!=attrs){
+			for (int i = 0; i < attrs.length; i++) {
+				append(attrs[i],ctx+".AuthenticatedAttributes["+i+"]",sb);
+			}
+		}
+		attrs=si.getUnauthenticatedAttributes();
+		if(null!=attrs){
+			for (int i = 0; i < attrs.length; i++) {
+				append(attrs[i],ctx+".UnauthenticatedAttributes["+i+"]",sb);
+			}
+		}
+	}
+	private static void append(Attribute attr,String ctx,StringBuilder sb){
+		append(sb,ctx,".Type(OID):",attr.getType().getNameAndID());
+		try {
+			AttributeValue[] attrs = attr.getAttributeValues();
+			for (int i = 0; i < attrs.length; i++) {
+				append(attrs[i],ctx+".AttributeValue["+i+"]",sb);
+			}
+		} catch (CodingException e) {
+			append(sb,ctx,": Could not get Attribute Values: ",e.getMessage());
+		}
+
+	}
+	private static void append(AttributeValue attr,String ctx, StringBuilder sb){
+		append(sb,ctx,".Name:",attr.getName());
+		append(sb,ctx,".OID:",attr.getAttributeType().getNameAndID());
+		append(sb,ctx,".class:",attr.getClass());
+		try {
+			append(sb,ctx,".Value:",attr.toASN1Object());
+		} catch (CodingException e) {
+			append(sb,ctx,".Value Could not be fetched: ",e.getMessage());
+		}
+	}
+	private static void append(X509Certificate crt,Set<?> extensionOIDs, String ctx, StringBuilder sb) {
+		Iterator<?> i=extensionOIDs.iterator();
+		while (i.hasNext()) {
+			ObjectID extOid = ObjectID.getObjectID((String) i.next());
+			append(sb,ctx,".OID:",extOid.getNameAndID());
+			try {
+				V3Extension ext=crt.getExtension(extOid);
+				append(sb,ctx,".Name:",ext.getName());
+				append(sb,ctx,".IsCritical:",ext.isCritical());
+			} catch (X509ExtensionInitException e) {
+				append(sb,ctx,": Unknown Extension:",e.getMessage());
+			}
+		}
+	}
+}
