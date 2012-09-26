@@ -10,6 +10,8 @@ public class LoadProviderModel {
 
 	private String className;
 	private GenericListModel<File> classPath=new GenericListModel<File>();
+	private String name;
+
 	public String getClassName() {
 		return className;
 	}
@@ -36,5 +38,13 @@ public class LoadProviderModel {
 
 	public boolean isLoaded(){
 		return loaded;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

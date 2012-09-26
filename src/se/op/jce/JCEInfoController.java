@@ -51,7 +51,7 @@ public class JCEInfoController {
 			return;
 		}
 
-		Security.removeProvider(providerModel.getClassName());
+		Security.removeProvider(providerModel.getName());
 		providerModel.setLoaded(false);
 		model.reReadProviders();
 	}
@@ -72,6 +72,7 @@ public class JCEInfoController {
 		URLClassLoader loader= new URLClassLoader(urls,getClass().getClassLoader());
 		Class<?> provClass=Class.forName(providerModel.getClassName(),true,loader);
 		Provider provInst=(Provider)provClass.newInstance();
+		providerModel.setName(provInst.getName());
 		Security.addProvider(provInst);
 		providerModel.setLoaded(true);
 		model.reReadProviders();
@@ -83,7 +84,7 @@ public class JCEInfoController {
 	}
 
 	public void stopTest(JLabel lbl) {
-		lbl.setText("hejdå");
+		lbl.setText("hejd√•");
 		
 	}
 	
