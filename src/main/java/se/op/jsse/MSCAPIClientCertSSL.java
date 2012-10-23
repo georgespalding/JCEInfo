@@ -77,7 +77,7 @@ public static void main(String[] args) throws Exception {
     SSLSocketFactory sslSockFac= new DebugSSLSocketFactory(ctx.getSocketFactory());
 
 
-    URL u=new URL("https://ssou2.rsv.se/");
+    URL u=new URL("https://ssop2.rsv.se/");
     HttpURLConnection conn;
     try {
             conn = (HttpURLConnection) u.openConnection();
@@ -85,7 +85,7 @@ public static void main(String[] args) throws Exception {
             System.err.println("Failed to connect to '" + u + "'"+e);
             throw e;
     }
-    // förbered...
+    // fÃ¶rbered...
     if (conn instanceof HttpsURLConnection) {
             HttpsURLConnection httpsConn = (HttpsURLConnection) conn;
             httpsConn.setSSLSocketFactory(sslSockFac);

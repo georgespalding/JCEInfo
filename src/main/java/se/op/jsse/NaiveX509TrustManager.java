@@ -31,7 +31,7 @@ public class NaiveX509TrustManager implements X509TrustManager{
     }
 
     public boolean isClientTrusted(java.security.cert.X509Certificate[] chain){
-        return boolXXXTrusted("isServer", chain);
+        return boolXXXTrusted("isClient", chain);
     }
 
 
