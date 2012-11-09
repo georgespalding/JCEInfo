@@ -28,7 +28,7 @@ public class PKCS11Loader {
 			PrintWriter pw=new PrintWriter(new File(CfgFile));
 			pw.println("name = "+CfgName);
 //			pw.println("library = /usr/libexec/SmartCardServices/pkcs11/tokendPKCS11.so");
-			pw.println("library = /Applications/Personal.app/Contents/PlugIns/CSPBundleNexus.bundle/Contents/MacOS/../Frameworks/tokenapi.framework/tokenapi");
+			pw.println("library = /Applications/BankID.app/Contents/PlugIns/CSPBundleNexus.bundle/Contents/MacOS/../Frameworks/tokenapi.framework/tokenapi");
 			pw.println("description = George Test");
 			pw.close();
 		}

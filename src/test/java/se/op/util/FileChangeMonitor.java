@@ -1,6 +1,7 @@
 package se.op.util;
 
 import java.io.File;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
@@ -11,7 +12,7 @@ import java.util.logging.Logger;
  * isReloadNeeded will not return true until a grace period of <code>MinCheckIntervalMillis</code> has passed after the last modification of the file.
  * TODO: Javadoc comments for this type
  */
-public class FileChangeMonitor<T> {
+public class FileChangeMonitor<I, P> {
 	private static final String CLASS_NAME=FileChangeMonitor.class.getName();
 	private static final Logger log=Logger.getLogger(CLASS_NAME);
 
@@ -19,10 +20,10 @@ public class FileChangeMonitor<T> {
 	private final File iTarget;
 	private final AtomicLong iLastChecked = new AtomicLong();
 	private final AtomicLong iLastLoaded = new AtomicLong();
-	private final AtomicReference<T> iResult = new AtomicReference<T>();
+	private final ConcurrentHashMap<I,P> iCache = new ConcurrentHashMap<I,P>();
 	
-	public FileChangeMonitor(File aTarget, long aMinCheckIntervalMillis){
-		this.iTarget = aTarget;
+	public FileChangeMonitor(FileBasedProducer<I, P>, long aMinCheckIntervalMillis){
+		this.iCache = ;
 		this.iMinCheckIntervalMillis = aMinCheckIntervalMillis;
 	}
 

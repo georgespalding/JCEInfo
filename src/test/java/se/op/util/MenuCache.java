@@ -5,6 +5,8 @@ import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import se.op.util.producers.FileBasedProducer;
+
 /**
  * Used for detecting whether the Main Menu definition has changed on disk.
  */
@@ -15,7 +17,7 @@ public class MenuCache<T> {
 
 	// list of main menu 
 	private final ConcurrentHashMap<String, FileChangeMonitor<T>> iMainMenuMap = new ConcurrentHashMap<String, FileChangeMonitor<T>>();
-	private final FileBasedProducer<T> iMenuProvider;
+	private final FileBasedProducer<T,String> iMenuProvider;
 	
 	public MenuCache(FileBasedProducer<T> mmp, long aMinTimeBetweenChecksMillis){
 		iMinTimeBetweenChecksMillis = aMinTimeBetweenChecksMillis;
@@ -23,8 +25,7 @@ public class MenuCache<T> {
 	}
 
 	public T getMenu(Locale aLocale) {
-		File tFile = iMenuProvider.getMaterialFiles();
-		String tMainMenuKey = tFile+"_"+aLocale;
+		String tId = iMenuProvider.getId();
 
 		long tNow = System.currentTimeMillis();
 		FileChangeMonitor<T> tFileChangeMon = iMainMenuMap.get(tMainMenuKey);
