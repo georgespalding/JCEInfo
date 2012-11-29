@@ -15,7 +15,7 @@ public class MSCAPIClientCertSSL {
 public static void main(String[] args) throws Exception {
     // Trust all invalid server certificate
 
-    TrustManager[] trustMgr = DebugSSLSocketFactory.createTrustManagers(DebugSSLSocketFactory.createKeyStore(
+    TrustManager[] trustMgr = JSSEUtil.createTrustManagers(JSSEUtil.createKeyStore(
             new File("P:/rsvutv/opt/rsv/pki/test/int_org/ca-cert-jks/root-Skatteverkets_Interna_ORG_CAs_TEST-crt.jks"),
             "Pa55ivitet".toCharArray()));
 
@@ -67,14 +67,14 @@ public static void main(String[] args) throws Exception {
         System.err.println("kms["+i+"]:"+kms[i].getClass());
         if(kms[i] instanceof X509KeyManager){
             X509KeyManager km=(X509KeyManager)kms[i];
-            kms[i]=new DebugX509KeyManager(km);
+            kms[i]=new X509KeyManagerWrapper(km);
         }
     } 
     ctx.init(kms, trustMgr, x);
 
     //FIXME variation
     //SSLSocketFactory sslSockFac= ctx.getSocketFactory();
-    SSLSocketFactory sslSockFac= new DebugSSLSocketFactory(ctx.getSocketFactory());
+    SSLSocketFactory sslSockFac= new SSLSocketFactoryWrapper(ctx.getSocketFactory());
 
 
     URL u=new URL("https://ssop2.rsv.se/");

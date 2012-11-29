@@ -7,6 +7,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import se.op.util.producers.FileBasedProducer;
+
 /**
  * Checks the file for modification at most every <code>MinCheckIntervalMillis</code>
  * isReloadNeeded will not return true until a grace period of <code>MinCheckIntervalMillis</code> has passed after the last modification of the file.
@@ -22,8 +24,8 @@ public class FileChangeMonitor<I, P> {
 	private final AtomicLong iLastLoaded = new AtomicLong();
 	private final ConcurrentHashMap<I,P> iCache = new ConcurrentHashMap<I,P>();
 	
-	public FileChangeMonitor(FileBasedProducer<I, P>, long aMinCheckIntervalMillis){
-		this.iCache = ;
+	public FileChangeMonitor(FileBasedProducer<I, P> c, long aMinCheckIntervalMillis){
+		this.iCache = c;
 		this.iMinCheckIntervalMillis = aMinCheckIntervalMillis;
 	}
 
