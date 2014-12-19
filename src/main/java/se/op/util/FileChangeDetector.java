@@ -21,7 +21,7 @@ public class FileChangeDetector {
 	
 	private void checkDone(long aCurrentTimeMillis){
 		iDoNotCheckBefore = aCurrentTimeMillis + iMinCheckIntervalMillis;
-		System.err.println("checkDone");
+		//System.err.println("checkDone");
 	}
 	
 	public boolean shouldReload(long aCurrentTimeMillis){

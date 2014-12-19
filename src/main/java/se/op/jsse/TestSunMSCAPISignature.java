@@ -3,7 +3,6 @@ package se.op.jsse;
 import java.io.IOException;
 import java.security.*;
 import java.util.Enumeration;
-
 import org.apache.commons.codec.binary.Base64;
 
 public class TestSunMSCAPISignature {
