@@ -39,18 +39,18 @@ public class TestFileChangeDetector {
 		
 		int numChanges=0;
 		int numDetectedReloads=0;
-		long now=1;
+		long now=5;
 		file.setLastModified(now);
-		FileChangeDetector fdc=new FileChangeDetector(existingFile, 10, now);
-		for(;now < 101;now++){
+		FileChangeDetector fdc=new FileChangeDetector(existingFile, 9, now);
+		for(;now <= 100+5;now++){
+			if( now % 10 == 0 ){
+				numChanges++;
+				file.setLastModified(now);
+			}
 			if(fdc.shouldReload(now)){
 				fdc.setLoaded(now);
 				assertFalse("Should not signal reload right after load", fdc.shouldReload(now));
 				numDetectedReloads++;
-			}
-			if(now%10==0){
-				numChanges++;
-				file.setLastModified(now);
 			}
 		}
 		

@@ -108,9 +108,8 @@ public class ParentLastResourceClassLoader extends URLClassLoader{
         	File f=new File(url.getPath());
         	return f.lastModified();
         case "jar":
-        	JarURLConnection juc = null;
         	try{
-        		juc = (JarURLConnection)url.openConnection();
+				JarURLConnection juc = (JarURLConnection)url.openConnection();
         		lastModified(juc.getJarFileURL());
         	} catch (IOException e) {
         		//FIXME
