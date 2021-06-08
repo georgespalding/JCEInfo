@@ -34,22 +34,6 @@ import iaik.x509.V3Extension;
 import iaik.x509.X509Certificate;
 import iaik.x509.X509ExtensionInitException;
 
-/**
- * IAIK versioner i omlopp
- * C:/WS/sw/TSS_2.3.4_incl_SP4/TSS server/lib/iaik_jce.jar:
- * 	IAIK version 3.141
- * C:/WS/ccweb/proj/za/vobs/main/pki/src/ext/iaik/jce3.13/iaik_jce_full.jar:
- * 	IAIK version 3.13
- * env.ZI_HOME/lib/iaik_jce.jar:
- *	IAIK version 3.0100000000000002
- * iipax4???
- * 
- * @see http://tools.ietf.org/html/rfc2315
- * @see clearcase:za/pki/kur/12_Standards/rsa/pkcs07v1.5.pdf
- * @see http://en.wikipedia.org/wiki/Asn1
- * @author nuto
- *
- */
 public class InspectPKCS7 {
 
 	/**
@@ -88,8 +72,8 @@ public class InspectPKCS7 {
 		System.err.println(toString(new ContentInfo(new ByteArrayInputStream(sigdat))));
 		System.err.println("===========================================");
 		// Hit kommer vi aldrig!!! eftersom IAIK's SignedData alltid returnerar ObjectID.pkcs7_signedData
-		// dessutom så hanteras Content i en signatur alltid som ObjectID.pkcs7_data
-		// Lösning gör egen provider som korrekt parsar alla typer av ContentInfo...
+		// dessutom sï¿½ hanteras Content i en signatur alltid som ObjectID.pkcs7_data
+		// Lï¿½sning gï¿½r egen provider som korrekt parsar alla typer av ContentInfo...
 	}
 
 	private static byte[] createPKCS7SignedData(ObjectID contentType, byte[] sigdata)
@@ -165,7 +149,7 @@ public class InspectPKCS7 {
 				contentPrinted=true;
 			}else if(ObjectID.pkcs7_data.equals(oid)){
 				// Hit kommer vi aldrig!!! eftersom IAIK's SignedData alltid returnerar ObjectID.pkcs7_signedData
-				// dessutom så hanteras Content i en signatur alltid som ObjectID.pkcs7_data
+				// dessutom sï¿½ hanteras Content i en signatur alltid som ObjectID.pkcs7_data
 				append(sb, ctx,".Data: ",new String(content));
 				contentPrinted=true;
 			}else{
@@ -181,7 +165,7 @@ public class InspectPKCS7 {
 	}
 	
 	private static void append(SignedData sd,String ctx,StringBuilder sb){
-		//Onödig alltid samma som för Content?!
+		//Onï¿½dig alltid samma som fï¿½r Content?!
 		append(sb, ctx,".Version: ",sd.getVersion());
 			
 		AlgorithmID [] digalgs=sd.getDigestAlgorithms();

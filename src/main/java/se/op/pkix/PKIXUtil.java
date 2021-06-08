@@ -1,38 +1,20 @@
 package se.op.pkix;
 
-import iaik.security.rsa.RSA;
+//import iaik.security.rsa.RSA;
 
+import java.io.*;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Security;
-import java.security.cert.CertPath;
-import java.security.cert.CertPathBuilder;
-import java.security.cert.CertPathBuilderResult;
-import java.security.cert.CertPathParameters;
-import java.security.cert.CertPathValidator;
-import java.security.cert.CertPathValidatorException;
-import java.security.cert.CertPathValidatorResult;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.PKIXCertPathValidatorResult;
-import java.security.cert.PKIXParameters;
-import java.security.cert.TrustAnchor;
-import java.security.cert.X509Certificate;
+import java.security.cert.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class PKIXUtil {
 	
-	public static void main(String[] args) throws CertificateException, FileNotFoundException, IOException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, KeyStoreException, CertPathValidatorException {
+	public static void main(String[] args) throws CertificateException, IOException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, KeyStoreException, CertPathValidatorException {
 		// instantiate a KeyStore with type JKS
 	    KeyStore ks = KeyStore.getInstance("JKS");
 	    // load the contents of the KeyStore

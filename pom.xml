@@ -8,6 +8,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <push.changes>true</push.changes>
+
+        <bcprov.version>1.68</bcprov.version>
     </properties>
 
     <scm>
@@ -22,58 +24,59 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.10</version>
+            <version>1.15</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>5.7.2</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.51</version>
+            <version>${bcprov.version}</version>
             <scope>optional</scope>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15on</artifactId>
-            <version>1.51</version>
+            <version>${bcprov.version}</version>
             <scope>optional</scope>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-ext-jdk15on</artifactId>
-            <version>1.51</version>
+            <version>${bcprov.version}</version>
             <scope>optional</scope>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpg-jdk15on</artifactId>
-            <version>1.51</version>
+            <version>${bcprov.version}</version>
             <scope>optional</scope>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcmail-jdk15on</artifactId>
-            <version>1.51</version>
+            <version>${bcprov.version}</version>
             <scope>optional</scope>
         </dependency>
-        <dependency>
-            <groupId>jce.iaik.tugraz</groupId>
-            <artifactId>iaik_jce_full</artifactId>
-            <version>5.2</version>
-            <systemPath>/Users/geospa/developer/iaik/iaik_jce_full/lib/iaik_jce_full.jar</systemPath>
-            <scope>system</scope>
-        </dependency>
-        <dependency>
-            <groupId>jce.iaik.tugraz</groupId>
-            <artifactId>iaik_xsect</artifactId>
-            <version>1.191</version>
-            <systemPath>/Users/geospa/developer/iaik/iaik_xsect/lib/iaik_xsect.jar</systemPath>
-            <scope>system</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>jce.iaik.tugraz</groupId>-->
+<!--            <artifactId>iaik_jce_full</artifactId>-->
+<!--            <version>5.2</version>-->
+<!--            <systemPath>/Users/geospa/developer/iaik/iaik_jce_full/lib/iaik_jce_full.jar</systemPath>-->
+<!--            <scope>system</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>jce.iaik.tugraz</groupId>-->
+<!--            <artifactId>iaik_xsect</artifactId>-->
+<!--            <version>1.191</version>-->
+<!--            <systemPath>/Users/geospa/developer/iaik/iaik_xsect/lib/iaik_xsect.jar</systemPath>-->
+<!--            <scope>system</scope>-->
+<!--        </dependency>-->
     </dependencies>
 
     <distributionManagement>

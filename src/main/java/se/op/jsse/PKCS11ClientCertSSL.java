@@ -16,8 +16,8 @@ public static void main(String[] args) throws Exception {
     // Trust all invalid server certificate
 
     TrustManager[] trustMgr = JSSEUtil.createTrustManagers(JSSEUtil.createKeyStore(
-            new File("P:/rsvutv/opt/rsv/pki/test/int_org/ca-cert-jks/root-Skatteverkets_Interna_ORG_CAs_TEST-crt.jks"),
-            "Pa55ivitet".toCharArray()));
+            new File("TEST-crt.jks"),
+            "Changeit".toCharArray()));
 
     SSLContext ctx = SSLContext.getInstance("TLS");
     
@@ -33,7 +33,7 @@ public static void main(String[] args) throws Exception {
     Enumeration<String> aliases=ks.aliases();
     int ai=0;
     while (aliases.hasMoreElements()) {
-        String alias = (String) aliases.nextElement();
+        String alias = aliases.nextElement();
         if(alias.contains("eorge")){
             log.info("Alias i ks Windows-MY["+ai+"}:"+alias);
         }
@@ -49,14 +49,13 @@ public static void main(String[] args) throws Exception {
     
     kmf.init(new KeyStoreBuilderParameters(new KeyStore.Builder() {
         @Override
-        public ProtectionParameter getProtectionParameter(String alias)
-                throws KeyStoreException {
+        public ProtectionParameter getProtectionParameter(String alias) {
             System.err.println("XXXXXXXXXXXXX getProtectionParameter("+alias+")");
             return new TestPasswordProtectionParameter("165974".toCharArray());
         }
         
         @Override
-        public KeyStore getKeyStore() throws KeyStoreException {
+        public KeyStore getKeyStore() {
             System.err.println("XXXXXXXXXXXXX getKeyStore() of type "+ks.getType());
             return ks;
         }
